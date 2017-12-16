@@ -18,6 +18,7 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var descriptions: UILabel!
     
     var product = ProductModel()
+    let shopeeng = Shopeeng()
     
     var productId:Int?
     var productTitle:String?
@@ -55,7 +56,7 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
 //        image.lazyLoadImage(link: productURL ?? "", contentMode: .scaleAspectFit)
         
         name.text = product.name
-        price.text = "Rp. \(product.price)"
+        price.text = "Rp. \(shopeeng.priceToString(integer: product.price))"
         descriptions.text = product.description
         rating.rating = product.rating
         rating.text = "\(product.rating)"

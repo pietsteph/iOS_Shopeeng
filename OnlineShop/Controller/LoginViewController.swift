@@ -9,14 +9,16 @@
 import UIKit
 import LocalAuthentication
 import Alamofire
+import NVActivityIndicatorView
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
     
     @IBOutlet weak var txtUsername: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
     @IBOutlet weak var switchRemember: UISwitch!
     
     let shopeeng = Shopeeng()
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     var login:Bool = false
     
@@ -37,9 +39,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let postString = "email=\(txtUsername.text!)&password=\(txtPassword.text!)";
         request.httpBody = postString.data(using: String.Encoding.utf8);
         
-        self.view.addSubview(self.activityIndicator)
-        self.activityIndicator.frame = self.view.bounds
-        self.activityIndicator.startAnimating()
+        let size = CGSize(width: 40, height: 40)
+        self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
         
         URLSession.shared.dataTask(with: request) {
             (data: Data?, response: URLResponse?, error: Error?) in
@@ -53,18 +54,20 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             guard let data = data else { return }
             
             do {
-                let userData = try JSONDecoder().decode(Login.self, from: data)
+                let json = try JSONDecoder().decode(Login.self, from: data)
                 
-                guard let id = userData.id, let role = userData.role, let token = userData.token else { return }
+                if json.errors != nil{
+                    return
+                }
                 
-                UserDefaults.standard.set(id, forKey: "Id")
-                UserDefaults.standard.set(role, forKey: "Role")
-                UserDefaults.standard.set(token, forKey: "Token")
+                UserDefaults.standard.set(json.id!, forKey: "Id")
+                UserDefaults.standard.set(json.role!, forKey: "Role")
+                UserDefaults.standard.set(json.api_token!, forKey: "Token")
                 UserDefaults.standard.set(true, forKey: "LoggedIn")
                 UserDefaults.standard.set(false, forKey: "SecureApps")
                 
-                if UserDefaults.standard.string(forKey: "Role") == "seller"{
-                    UserDefaults.standard.set(userData.shop_id, forKey: "ShopId")
+                if UserDefaults.standard.string(forKey: "Role") == "Seller"{
+                    UserDefaults.standard.set(json.shop_id, forKey: "ShopId")
                 }
                 
                 UserDefaults.standard.synchronize()
@@ -75,9 +78,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             
             OperationQueue.main.addOperation({
                 //calling another function after fetching the json
-                self.activityIndicator.stopAnimating()
+                self.stopAnimating()
+                
                 if UserDefaults.standard.bool(forKey: "LoggedIn"){
-                    if UserDefaults.standard.string(forKey: "Role") == "user"{
+                    if UserDefaults.standard.string(forKey: "Role") == "Buyer"{
                         self.performSegue(withIdentifier: "login", sender: self)
                     }
                     else{
@@ -85,11 +89,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     }
                 }
                 else{
+                    
                     let alert = UIAlertController(title: "Login Failed", message: "Email and/or Password incorrect", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
                         
                     }))
                     self.present(alert, animated: true, completion: nil)
+                    
                 }
             })
         }.resume()

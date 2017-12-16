@@ -7,15 +7,18 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
-class SettingsTableViewController: UITableViewController {
-    let setting_name_list_user:[String] = ["Profile", "Secure Apps", "Logout"]
-    let setting_icon_list_user:[String] = ["profile", "fingerprint", "logout"]
+class SettingsTableViewController: UITableViewController, NVActivityIndicatorViewable {
+    let setting_name_list_user:[String] = ["Profile", "Change Password", "Change Address", "Secure Apps", "Logout"]
+    let setting_icon_list_user:[String] = ["profile", "lock", "location", "fingerprint", "logout"]
     
-    let setting_name_list_seller:[String] = ["Profile", "Shop Profile", "Secure Apps", "Logout"]
-    let setting_icon_list_seller:[String] = ["profile", "store", "fingerprint", "logout"]
+    let setting_name_list_seller:[String] = ["Profile", "Shop Profile", "Change Password", "Change Address", "Secure Apps", "Logout"]
+    let setting_icon_list_seller:[String] = ["profile", "store", "lock", "location", "fingerprint", "logout"]
+    
     let delegate = UIApplication.shared.delegate as! AppDelegate
     let shopeeng = Shopeeng()
+    let activityIndicator:NVActivityIndicatorView? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +42,7 @@ class SettingsTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        if (UserDefaults.standard.string(forKey: "Role") == "user") {
+        if (UserDefaults.standard.string(forKey: "Role") == "buyer") {
             return setting_name_list_user.count
         }
         else{
@@ -58,7 +61,8 @@ class SettingsTableViewController: UITableViewController {
                 myCell.selectedBackgroundView = bgColorView
                 myCell.settingIcon?.image = UIImage(named: setting_icon_list_user[indexPath.row])
                 myCell.settingName?.text = setting_name_list_user[indexPath.row]
-                if (setting_name_list_user[indexPath.row] == "Profile") {
+                if (setting_name_list_user[indexPath.row] == "Profile" || setting_name_list_user[indexPath.row] == "Change Password" ||
+                    setting_name_list_user[indexPath.row] == "Change Address") {
                     myCell.accessoryType = .disclosureIndicator
                 }
                 
@@ -89,7 +93,9 @@ class SettingsTableViewController: UITableViewController {
                 myCell.selectedBackgroundView = bgColorView
                 myCell.settingIcon?.image = UIImage(named: setting_icon_list_seller[indexPath.row])
                 myCell.settingName?.text = setting_name_list_seller[indexPath.row]
-                if (setting_name_list_seller[indexPath.row] == "Profile" || setting_name_list_seller[indexPath.row] == "Shop Profile") {
+                if (setting_name_list_seller[indexPath.row] == "Profile" || setting_name_list_seller[indexPath.row] == "Shop Profile" ||
+                    setting_name_list_seller[indexPath.row] == "Change Password" ||
+                    setting_name_list_seller[indexPath.row] == "Change Address") {
                     myCell.accessoryType = .disclosureIndicator
                 }
                 
@@ -117,12 +123,6 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if(indexPath.row == 0){
-//            self.performSegue(withIdentifier: "profile", sender: self)
-//        }
-//        else if(indexPath.row == 2){
-//            self.performSegue(withIdentifier: "logout", sender: self)
-//        }
         let selected = tableView.cellForRow(at: indexPath) as! SettingsTableViewCell
         if selected.settingName.text == "Profile"{
             self.performSegue(withIdentifier: "profile", sender: self)
@@ -130,6 +130,12 @@ class SettingsTableViewController: UITableViewController {
         else if selected.settingName.text == "Shop Profile"{
             self.performSegue(withIdentifier: "profileShop", sender: self)
         }
+//        else if selected.settingName.text == "Change Password"{
+//            self.performSegue(withIdentifier: "changePassword", sender: self)
+//        }
+//        else if selected.settingName.text == "Change Address"{
+//            self.performSegue(withIdentifier: "changeAddress", sender: self)
+//        }
         else if selected.settingName.text == "Logout"{
             let alert = UIAlertController(title: "Alert", message: "Are you sure you want to logout?", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action:UIAlertAction)->Void in
@@ -138,9 +144,8 @@ class SettingsTableViewController: UITableViewController {
                 request.httpMethod = "POST"
                 request.setValue("Bearer \(UserDefaults.standard.string(forKey: "Token")!)", forHTTPHeaderField: "Authorization")
                 
-                //            self.view.addSubview(self.activityIndicator)
-                //            self.activityIndicator.frame = self.view.bounds
-                //            self.activityIndicator.startAnimating()
+                let size = CGSize(width: 40, height: 40)
+                self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
                 
                 URLSession.shared.dataTask(with: request) {
                     (data: Data?, response: URLResponse?, error: Error?) in
@@ -157,7 +162,13 @@ class SettingsTableViewController: UITableViewController {
                     
                     do {
                         let info = try JSONDecoder().decode(Logout.self, from: data)
-                        message = info.info!
+                        
+                        if(info.error == nil){
+                            message = info.info!
+                        }
+                        else{
+                            message = info.error!
+                        }
                         
                         UserDefaults.standard.removeObject(forKey: "Id")
                         UserDefaults.standard.removeObject(forKey: "Role")
@@ -172,16 +183,14 @@ class SettingsTableViewController: UITableViewController {
                     }
                     
                     OperationQueue.main.addOperation({
-                        //                    self.activityIndicator.stopAnimating()
-                        let alert = UIAlertController(title: "Logout", message: message, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
-                            self.performSegue(withIdentifier: "logout", sender: self)
-                        }))
-                        self.present(alert, animated: true, completion: nil)
+                        print(message)
+                        self.stopAnimating()
+                        self.performSegue(withIdentifier: "logout", sender: self)
                     })
                 }.resume()
                 
             }))
+            
             alert.addAction(UIAlertAction(title: "No", style: .destructive, handler: { (action:UIAlertAction)->Void in
                 
             }))
@@ -201,9 +210,7 @@ class SettingsTableViewController: UITableViewController {
 //    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if(segue.identifier == "logout"){
-            
-        }
+        
     }
 
 }

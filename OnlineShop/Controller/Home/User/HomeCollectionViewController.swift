@@ -44,11 +44,8 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
         searchController.searchBar.delegate = self
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.tintColor = delegate.themeColor
-        //        navigationItem.searchController = searchController
         searchController.searchBar.searchBarStyle = .minimal
         searchController.hidesNavigationBarDuringPresentation = false
-        
-        //        self.definesPresentationContext = true
         
         //Refresh Control
         refresher = UIRefreshControl()
@@ -69,14 +66,6 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
         UIView.animate(withDuration: 0.5, animations: {
             self.navigationItem.rightBarButtonItems = nil
         }) { (finished) in
-            //            self.searchController.searchBar.alpha = 0.0
-            
-            //            UIView.animate(withDuration: 0.5, animations: {
-            //                self.searchController.searchBar.alpha = 1.0
-            //            }, completion: { (finished) in
-            //                self.navigationItem.titleView = self.searchController.searchBar
-            //                self.searchController.searchBar.becomeFirstResponder()
-            //            })
             self.navigationItem.titleView = UIView()
             UIView.transition(with: self.navigationItem.titleView!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: {
                 self.navigationItem.titleView = self.searchController.searchBar
@@ -116,14 +105,6 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
                 self.refresher.endRefreshing()
             }
         }
-    }
-    
-    func setDoneOnKeyboard() {
-        let keyboardToolbar = UIToolbar()
-        keyboardToolbar.sizeToFit()
-        let flexBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(self.dismissKeyboard))
-        keyboardToolbar.items = [flexBarButton, doneBarButton]
     }
     
     @objc func dismissKeyboard() {

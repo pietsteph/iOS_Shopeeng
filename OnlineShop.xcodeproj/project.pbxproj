@@ -10,8 +10,6 @@
 		6341707DE9B2DA4C12D20DA3 /* Pods_OnlineShop.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BAA30AD7C10778AED3FCD7A /* Pods_OnlineShop.framework */; };
 		EE0360871FD2A138005FDCBE /* SectionHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0360861FD2A138005FDCBE /* SectionHeaderCollectionReusableView.swift */; };
 		EE205C431FC72A6000E54F2A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE205C421FC72A6000E54F2A /* LoginViewController.swift */; };
-		EE663F6F1FD2F14000C78AE0 /* BalanceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE663F6E1FD2F14000C78AE0 /* BalanceTableViewCell.swift */; };
-		EE663F711FD2F31900C78AE0 /* CreditsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE663F701FD2F31900C78AE0 /* CreditsViewController.swift */; };
 		EE663F731FD523C300C78AE0 /* ProductModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE663F721FD523C300C78AE0 /* ProductModel.swift */; };
 		EE663F751FD52FC100C78AE0 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE663F741FD52FC100C78AE0 /* HomeTableViewController.swift */; };
 		EE663F771FD5390300C78AE0 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE663F761FD5390300C78AE0 /* HomeTableViewCell.swift */; };
@@ -22,7 +20,6 @@
 		EE7879A01FCAAEAD009E3A22 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE78799F1FCAAEAD009E3A22 /* ProfileViewController.swift */; };
 		EE7879A21FCB35A2009E3A22 /* DSCameraHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7879A11FCB35A2009E3A22 /* DSCameraHandler.swift */; };
 		EE7C4DDE1FCC431E004DCE26 /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7C4DDD1FCC431E004DCE26 /* HomeCollectionViewCell.swift */; };
-		EE7C4DE51FCC484A004DCE26 /* CreditsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7C4DE41FCC484A004DCE26 /* CreditsTableViewCell.swift */; };
 		EEC4BA511FDBD8A100248367 /* OrderListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4BA501FDBD8A100248367 /* OrderListTableViewController.swift */; };
 		EEC58A5B1FBED8B5004BFF4D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC58A5A1FBED8B5004BFF4D /* AppDelegate.swift */; };
 		EEC58A621FBED8B5004BFF4D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EEC58A601FBED8B5004BFF4D /* Main.storyboard */; };
@@ -61,8 +58,6 @@
 		BC0C854D48E05B99E51F44A9 /* Pods-OnlineShop.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OnlineShop.release.xcconfig"; path = "Pods/Target Support Files/Pods-OnlineShop/Pods-OnlineShop.release.xcconfig"; sourceTree = "<group>"; };
 		EE0360861FD2A138005FDCBE /* SectionHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		EE205C421FC72A6000E54F2A /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		EE663F6E1FD2F14000C78AE0 /* BalanceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceTableViewCell.swift; sourceTree = "<group>"; };
-		EE663F701FD2F31900C78AE0 /* CreditsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditsViewController.swift; sourceTree = "<group>"; };
 		EE663F721FD523C300C78AE0 /* ProductModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductModel.swift; sourceTree = "<group>"; };
 		EE663F741FD52FC100C78AE0 /* HomeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
 		EE663F761FD5390300C78AE0 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
@@ -73,7 +68,6 @@
 		EE78799F1FCAAEAD009E3A22 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		EE7879A11FCB35A2009E3A22 /* DSCameraHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSCameraHandler.swift; sourceTree = "<group>"; };
 		EE7C4DDD1FCC431E004DCE26 /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
-		EE7C4DE41FCC484A004DCE26 /* CreditsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditsTableViewCell.swift; sourceTree = "<group>"; };
 		EEC4BA501FDBD8A100248367 /* OrderListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderListTableViewController.swift; sourceTree = "<group>"; };
 		EEC58A571FBED8B4004BFF4D /* OnlineShop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnlineShop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEC58A5A1FBED8B5004BFF4D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -152,7 +146,6 @@
 			children = (
 				EE7C4DDC1FCC4109004DCE26 /* Home */,
 				EEEFBB671FD27273001C3F41 /* Cart */,
-				EE7C4DE11FCC4821004DCE26 /* Credits */,
 				EEC4BA4F1FDBD73200248367 /* Order List */,
 				EE7879A31FCBFF7A009E3A22 /* Settings */,
 				EE205C421FC72A6000E54F2A /* LoginViewController.swift */,
@@ -179,16 +172,6 @@
 				EEFAA2201FCFFC660019F356 /* Seller */,
 			);
 			path = Home;
-			sourceTree = "<group>";
-		};
-		EE7C4DE11FCC4821004DCE26 /* Credits */ = {
-			isa = PBXGroup;
-			children = (
-				EE663F701FD2F31900C78AE0 /* CreditsViewController.swift */,
-				EE7C4DE41FCC484A004DCE26 /* CreditsTableViewCell.swift */,
-				EE663F6E1FD2F14000C78AE0 /* BalanceTableViewCell.swift */,
-			);
-			path = Credits;
 			sourceTree = "<group>";
 		};
 		EEC4BA4F1FDBD73200248367 /* Order List */ = {
@@ -492,7 +475,6 @@
 				EEC4BA511FDBD8A100248367 /* OrderListTableViewController.swift in Sources */,
 				EE205C431FC72A6000E54F2A /* LoginViewController.swift in Sources */,
 				EE78799A1FC99FE1009E3A22 /* SettingsTableViewController.swift in Sources */,
-				EE663F6F1FD2F14000C78AE0 /* BalanceTableViewCell.swift in Sources */,
 				EEFAA2271FD13E500019F356 /* Reachability.swift in Sources */,
 				EE663F751FD52FC100C78AE0 /* HomeTableViewController.swift in Sources */,
 				EEFAA21E1FCEB7C90019F356 /* ProfileShopViewController.swift in Sources */,
@@ -510,8 +492,6 @@
 				EEEFBB691FD2728B001C3F41 /* CartTableViewController.swift in Sources */,
 				EE78798C1FC85325009E3A22 /* Shopeeng.swift in Sources */,
 				EE7879A21FCB35A2009E3A22 /* DSCameraHandler.swift in Sources */,
-				EE7C4DE51FCC484A004DCE26 /* CreditsTableViewCell.swift in Sources */,
-				EE663F711FD2F31900C78AE0 /* CreditsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

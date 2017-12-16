@@ -9,7 +9,7 @@
 import UIKit
 import NVActivityIndicatorView
 
-class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
     
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var txtUsername: UITextField!
@@ -21,116 +21,9 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     @IBOutlet weak var txtRole: UITextField!
     
     let shopeeng = Shopeeng()
+    let delegate = UIApplication.shared.delegate as! AppDelegate
     let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-    var register:Bool = false
-    
-    @IBAction func btnRegister(_ sender: UIBarButtonItem) {
-        guard !(self.txtName.text?.isEmpty)!, !(self.txtUsername.text?.isEmpty)!, !(self.txtPassword.text?.isEmpty)!, !(self.txtRepeat.text?.isEmpty)!, !(self.txtRole.text?.isEmpty)!, !(self.txtPhoneNumber.text?.isEmpty)!, !(self.txtBirth.text?.isEmpty)!, !(self.txtGender.text?.isEmpty)! else {
-            errorAlert(message: "Please fill all required fields", code: 0)
-            return
-        }
-        
-        guard let name = txtName.text, let email = txtUsername.text, let password = txtPassword.text, let confirmation = txtRepeat.text, let phone = txtPhoneNumber.text, var birth = txtBirth.text, var gender = txtGender.text, let role = txtRole.text else { return }
-        
-        switch gender {
-        case "Male":
-            gender = "M"
-        case "Female":
-            gender = "F"
-        default:
-            gender = "M"
-        }
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY-MM-dd"
-        birth = formatter.string(from: datePickerBirth.date)
-
-        
-        let parameters = ["name": name, "email": email, "password": password, "password_confirmation": confirmation, "phone": phone, "birth": birth, "gender": gender, "role":role]
-        
-        let url = URL(string: "\(self.shopeeng.ipAddress)register")
-        var request = URLRequest(url:url!)
-        request.httpMethod = "POST"
-        
-        self.view.addSubview(self.activityIndicator)
-        self.activityIndicator.frame = self.view.bounds
-        self.activityIndicator.startAnimating()
-        
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
-            
-        }
-        catch {
-            print(error.localizedDescription)
-        }
-        
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        
-        URLSession.shared.dataTask(with: request) {
-            (data: Data?, response: URLResponse?, error: Error?) in
-            
-            if error != nil
-            {
-                print("error=\(error!)")
-                return
-            }
-            
-            guard let data = data else {return}
-            
-            var message = ""
-            
-            do{
-//                let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-                let json = try JSONDecoder().decode(Register.self, from: data)
-//                print(json.errors?.email![0])
-                
-                if (json.errors == nil){
-                    self.register = true
-                }
-                else{
-                    if(json.errors?.name != nil){
-                        message = (json.errors?.name![0])!
-                    }
-                    
-                    else if(json.errors?.email != nil){
-                        message = (json.errors?.email![0])!
-                    }
-                    
-                    else if(json.errors?.password != nil){
-                        message = (json.errors?.password![0])!
-
-                    }
-                    
-                    else if(json.errors?.phone != nil){
-                        message = (json.errors?.phone![0])!
-                    }
-                    
-                    else if(json.errors?.birth != nil){
-                        message = (json.errors?.birth![0])!
-                    }
-                    
-                    else if(json.errors?.gender != nil){
-                        message = (json.errors?.gender![0])!
-                    }
-                }
-            }
-            catch{
-                print("Error deserializing json: \(error)")
-            }
-
-            OperationQueue.main.addOperation({
-                //calling another function after fetching the json
-                self.activityIndicator.stopAnimating()
-                if(self.register){
-                    self.errorAlert(message: "Registered successfully", code: 1)
-                }
-                else{
-                    self.errorAlert(message: message, code: 0)
-                }
-            })
-        }.resume()
-    }
+    var registered:Bool = false
     
     func errorAlert(message:String, code:Int){
         let alert = UIAlertController(title: "Register", message: message, preferredStyle: .alert)
@@ -157,9 +50,15 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     let pickOptionRole = ["Buyer", "Seller"]
     let pickOptionGender = ["Male", "Female"]
     
+    var submitButton = UIBarButtonItem()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(register))
+        self.navigationItem.rightBarButtonItem = submitButton
+        
+        //Textfield Setup
         txtName.delegate = self
         txtUsername.delegate = self
         txtPassword.delegate = self
@@ -169,6 +68,7 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         txtPhoneNumber.delegate = self
         txtGender.delegate = self
         
+        //Input View Setup
         pickerViewRole.delegate = self
         pickerViewGender.delegate = self
         
@@ -177,6 +77,11 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         txtRole.inputView = pickerViewRole
         txtRole.text = pickOptionRole[0]
         
+        datePickerBirth.datePickerMode = .date
+        datePickerBirth.addTarget(self, action: #selector(datePickerValueChanged(sender:)), for: UIControlEvents.valueChanged)
+        txtBirth.inputView = datePickerBirth
+        
+        //Dummy
         txtName.text = "Cynthia"
         txtUsername.text = "ck@ckckck.wow"
         txtPhoneNumber.text = "1238772628"
@@ -184,10 +89,121 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         txtGender.text = pickOptionGender[1]
         txtPassword.text = "123456"
         txtRepeat.text = "123456"
+    }
+    
+    @objc func register() {
+        guard !(self.txtName.text?.isEmpty)!, !(self.txtUsername.text?.isEmpty)!, !(self.txtPassword.text?.isEmpty)!, !(self.txtRepeat.text?.isEmpty)!, !(self.txtRole.text?.isEmpty)!, !(self.txtPhoneNumber.text?.isEmpty)!, !(self.txtBirth.text?.isEmpty)!, !(self.txtGender.text?.isEmpty)! else {
+            errorAlert(message: "Please fill all required fields", code: 0)
+            return
+        }
         
-        datePickerBirth.datePickerMode = .date
-        datePickerBirth.addTarget(self, action: #selector(datePickerValueChanged(sender:)), for: UIControlEvents.valueChanged)
-        txtBirth.inputView = datePickerBirth
+        guard let name = txtName.text, let email = txtUsername.text, let password = txtPassword.text, let confirmation = txtRepeat.text, let phone = txtPhoneNumber.text, var birth = txtBirth.text, var gender = txtGender.text, let role = txtRole.text else { return }
+        
+        switch gender {
+        case "Male":
+            gender = "M"
+        case "Female":
+            gender = "F"
+        default:
+            gender = "M"
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-dd"
+        birth = formatter.string(from: datePickerBirth.date)
+        
+        
+        let parameters = ["name": name, "email": email, "password": password, "password_confirmation": confirmation, "phone": phone, "birth": birth, "gender": gender, "role":role]
+        
+        let url = URL(string: "\(self.shopeeng.ipAddress)register")
+        var request = URLRequest(url:url!)
+        request.httpMethod = "POST"
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+            
+        }
+        catch {
+            print(error.localizedDescription)
+        }
+        
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let size = CGSize(width: 40, height: 40)
+        startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
+        
+        URLSession.shared.dataTask(with: request) {
+            (data: Data?, response: URLResponse?, error: Error?) in
+            
+            if error != nil
+            {
+                print("error=\(error!)")
+                return
+            }
+            
+            guard let data = data else {return}
+            
+            var message = ""
+            
+            do{
+                let json = try JSONDecoder().decode(Register.self, from: data)
+                
+                if (json.errors == nil){
+                    UserDefaults.standard.set(json.id!, forKey: "Id")
+                    UserDefaults.standard.set(json.role!, forKey: "Role")
+                    UserDefaults.standard.set(json.api_token!, forKey: "Token")
+                    UserDefaults.standard.set(true, forKey: "LoggedIn")
+                    UserDefaults.standard.set(false, forKey: "SecureApps")
+                    
+                    if UserDefaults.standard.string(forKey: "Role") == "Seller"{
+                        UserDefaults.standard.set(json.shop_id, forKey: "ShopId")
+                      }
+                    
+                    self.registered = true
+                }
+                else{
+                    if(json.errors?.name != nil){
+                        message = (json.errors?.name![0])!
+                    }
+                        
+                    else if(json.errors?.email != nil){
+                        message = (json.errors?.email![0])!
+                    }
+                        
+                    else if(json.errors?.password != nil){
+                        message = (json.errors?.password![0])!
+                        
+                    }
+                        
+                    else if(json.errors?.phone != nil){
+                        message = (json.errors?.phone![0])!
+                    }
+                        
+                    else if(json.errors?.birth != nil){
+                        message = (json.errors?.birth![0])!
+                    }
+                        
+                    else if(json.errors?.gender != nil){
+                        message = (json.errors?.gender![0])!
+                    }
+                }
+            }
+            catch{
+                print("Error deserializing json: \(error)")
+            }
+            
+            OperationQueue.main.addOperation({
+                //calling another function after fetching the json
+                self.stopAnimating()
+                if(self.registered){
+                    self.errorAlert(message: "Registered successfully", code: 1)
+                }
+                else{
+                    self.errorAlert(message: message, code: 0)
+                }
+            })
+            }.resume()
     }
     
     @objc func datePickerValueChanged(sender:UIDatePicker) {
@@ -237,10 +253,19 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == pickerViewRole{
             txtRole.text = pickOptionRole[row]
+            if row == 0{
+                submitButton = UIBarButtonItem(title: "Submit", style: .plain, target: self, action: #selector(register))
+            }
+            else{
+                submitButton = UIBarButtonItem(title: "Next", style: .plain, target: self, action: #selector(register))
+            }
+            
+            self.navigationItem.rightBarButtonItem = submitButton
         }
         
         if(pickerView == pickerViewGender){
             txtGender.text = pickOptionGender[row]
+            self.navigationItem.rightBarButtonItem = submitButton
         }
     }
 

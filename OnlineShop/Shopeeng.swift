@@ -12,14 +12,15 @@ import UIKit
 struct Login:Decodable{
     let id: Int?
     let role: String?
-    let token: String?
+    let api_token: String?
     let shop_id: Int?
+    let errors: RegisterFields?
 }
 
 struct Register:Decodable{
     let id: Int?
     let role: String?
-    let token: String?
+    let api_token: String?
     let shop_id: Int?
     let message: String?
     let errors: RegisterFields?
@@ -37,10 +38,12 @@ struct RegisterFields:Decodable{
 struct User:Decodable{
     let id: Int?
     let name: String?
-    let username: String?
-    let credits: Int?
+    let email: String?
+    let phone: String?
+    let birth: String?
+    let gender: String?
     let role: String?
-    let token: String?
+    let api_token: String?
 }
 
 struct HomeProducts:Decodable{
@@ -66,24 +69,13 @@ struct Shop:Decodable{
 
 struct Logout:Decodable{
     let info: String?
+    let error: String?
 }
 
 class Shopeeng{
     
-    var ipAddress = "http://gunnylab.ddns.net:8080/api/"
-    
-    let URL_USER_LOGIN = "http://shopeeng.000webhostapp.com/login.php"
-    let URL_USER_REGISTER = "http://shopeeng.000webhostapp.com/register.php"
-    let URL_SEARCH = "http://shopeeng.000webhostapp.com/search.php"
-    let URL_TOPUP = "http://shopeeng.000webhostapp.com/topup.php"
-    let URL_POPULAR_NEW_PRODUCTS = "https://shopeeng.000webhostapp.com/home.php"
-    
-    //User Profile
-    let URL_PROFILE = "http://shopeeng.000webhostapp.com/user/profile.php"
-    let URL_UPDATE_PROFILE = "http://shopeeng.000webhostapp.com/user/updateprofile.php"
-    let URL_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/profile/"
-    let URL_UPDATE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/profilepicture.php"
-    let URL_DELETE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/deleteprofilepicture.php"
+//    let ipAddress = "http://gunnylab.ddns.net:8080/api/"
+    let ipAddress = "http://192.168.0.16:8080/api/"
     
     func homeCollection(completion: @escaping (_ results: [[ProductModel]]) -> Void){
         guard let myUrl = URL(string: URL_POPULAR_NEW_PRODUCTS) else { return }
@@ -153,20 +145,6 @@ class Shopeeng{
         }.resume()
     }
     
-    //Shop Profile
-    let URL_SHOP_PROFILE = "http://shopeeng.000webhostapp.com/shop/profile.php"
-    let URL_SHOP_UPDATE_PROFILE = "http://shopeeng.000webhostapp.com/shop/updateprofile.php"
-    let URL_SHOP_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/profile/"
-    let URL_SHOP_UPDATE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/profilepicture.php"
-    let URL_SHOP_DELETE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/deleteprofilepicture.php"
-    
-    //Seller Action
-    let URL_ADD_PRODUCT = "http://shopeeng.000webhostapp.com/shop/insertproduct.php"
-    let URL_ADD_PRODUCT_IMAGE = "http://shopeeng.000webhostapp.com/shop/insertproductimage.php"
-    
-    let URL_ALL_PRODUCTS = "http://shopeeng.000webhostapp.com/shop/allproducts.php"
-    let URL_PRODUCT_IMAGE = "http://shopeeng.000webhostapp.com/shop/product/"
-    
     func myProducts(shop_id:Int, completion: @escaping (_ results: [ProductModel]) -> Void){
         let myUrl = URL(string: URL_ALL_PRODUCTS)
         var request = URLRequest(url: myUrl!)
@@ -223,4 +201,31 @@ class Shopeeng{
         let strings = formatter.string(from: NSNumber(value: integer))
         return strings!
     }
+    
+    let URL_USER_LOGIN = "http://shopeeng.000webhostapp.com/login.php"
+    let URL_USER_REGISTER = "http://shopeeng.000webhostapp.com/register.php"
+    let URL_SEARCH = "http://shopeeng.000webhostapp.com/search.php"
+    let URL_TOPUP = "http://shopeeng.000webhostapp.com/topup.php"
+    let URL_POPULAR_NEW_PRODUCTS = "https://shopeeng.000webhostapp.com/home.php"
+    
+    //User Profile
+    let URL_PROFILE = "http://shopeeng.000webhostapp.com/user/profile.php"
+    let URL_UPDATE_PROFILE = "http://shopeeng.000webhostapp.com/user/updateprofile.php"
+    let URL_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/profile/"
+    let URL_UPDATE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/profilepicture.php"
+    let URL_DELETE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/user/deleteprofilepicture.php"
+    
+    //Shop Profile
+    let URL_SHOP_PROFILE = "http://shopeeng.000webhostapp.com/shop/profile.php"
+    let URL_SHOP_UPDATE_PROFILE = "http://shopeeng.000webhostapp.com/shop/updateprofile.php"
+    let URL_SHOP_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/profile/"
+    let URL_SHOP_UPDATE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/profilepicture.php"
+    let URL_SHOP_DELETE_PROFILE_PICTURE = "http://shopeeng.000webhostapp.com/shop/deleteprofilepicture.php"
+    
+    //Seller Action
+    let URL_ADD_PRODUCT = "http://shopeeng.000webhostapp.com/shop/insertproduct.php"
+    let URL_ADD_PRODUCT_IMAGE = "http://shopeeng.000webhostapp.com/shop/insertproductimage.php"
+    
+    let URL_ALL_PRODUCTS = "http://shopeeng.000webhostapp.com/shop/allproducts.php"
+    let URL_PRODUCT_IMAGE = "http://shopeeng.000webhostapp.com/shop/product/"
 }
