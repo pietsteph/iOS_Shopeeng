@@ -69,7 +69,7 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
     
     func downloadImage(){
         activityIndicator?.startAnimating()
-        guard let url = URL(string: productURL!) else {return}
+        guard let url = URL(string: product.imageURL) else { return }
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard let data = data, error == nil else {
                 return

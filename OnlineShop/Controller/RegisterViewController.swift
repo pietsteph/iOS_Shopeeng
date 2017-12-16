@@ -85,7 +85,6 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         txtName.text = "Cynthia"
         txtUsername.text = "ck@ckckck.wow"
         txtPhoneNumber.text = "1238772628"
-        txtBirth.text = "1997-10-23"
         txtGender.text = pickOptionGender[1]
         txtPassword.text = "123456"
         txtRepeat.text = "123456"
@@ -147,7 +146,7 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
             var message = ""
             
             do{
-                let json = try JSONDecoder().decode(Register.self, from: data)
+                let json = try JSONDecoder().decode(User.self, from: data)
                 
                 if (json.errors == nil){
                     UserDefaults.standard.set(json.id!, forKey: "Id")

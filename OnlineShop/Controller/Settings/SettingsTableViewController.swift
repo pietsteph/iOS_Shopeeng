@@ -53,7 +53,7 @@ class SettingsTableViewController: UITableViewController, NVActivityIndicatorVie
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SettingCell", for: indexPath)
         
-        if (UserDefaults.standard.string(forKey: "Role") == "user") {
+        if (UserDefaults.standard.string(forKey: "Role") == "buyer") {
             if let myCell = cell as? SettingsTableViewCell{
                 
                 let bgColorView = UIView()

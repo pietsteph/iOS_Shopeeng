@@ -66,7 +66,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
                 UserDefaults.standard.set(true, forKey: "LoggedIn")
                 UserDefaults.standard.set(false, forKey: "SecureApps")
                 
-                if UserDefaults.standard.string(forKey: "Role") == "Seller"{
+                if UserDefaults.standard.string(forKey: "Role") == "seller"{
                     UserDefaults.standard.set(json.shop_id, forKey: "ShopId")
                 }
                 
@@ -81,7 +81,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
                 self.stopAnimating()
                 
                 if UserDefaults.standard.bool(forKey: "LoggedIn"){
-                    if UserDefaults.standard.string(forKey: "Role") == "Buyer"{
+                    if UserDefaults.standard.string(forKey: "Role") == "buyer"{
                         self.performSegue(withIdentifier: "login", sender: self)
                     }
                     else{
@@ -128,7 +128,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
                     
                     DispatchQueue.main.async {
                         if success {
-                            if UserDefaults.standard.string(forKey: "Role") == "user"{
+                            if UserDefaults.standard.string(forKey: "Role") == "buyer"{
                                 self.performSegue(withIdentifier: "login", sender: self)
                             }
                             else{
@@ -147,7 +147,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
                     
                     DispatchQueue.main.async {
                         if success {
-                            if UserDefaults.standard.string(forKey: "Role") == "user"{
+                            if UserDefaults.standard.string(forKey: "Role") == "buyer"{
                                 self.performSegue(withIdentifier: "login", sender: self)
                             }
                             else{
@@ -166,7 +166,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
             }
         }
         else if UserDefaults.standard.bool(forKey: "LoggedIn") {
-            if UserDefaults.standard.string(forKey: "Role") == "user"{
+            if UserDefaults.standard.string(forKey: "Role") == "buyer"{
                 self.performSegue(withIdentifier: "login", sender: self)
             }
             else{

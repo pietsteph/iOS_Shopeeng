@@ -7,38 +7,15 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
-class ProfileShopViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class ProfileShopViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable, UITextViewDelegate {
     
     let shopeeng = Shopeeng()
-    var image = UIImage()
-    
-    @IBOutlet weak var btnProfilePic: UIButton!
+
     @IBOutlet weak var txtName: UITextField!
     @IBOutlet weak var txtPhone: UITextField!
-    
-    @IBAction func selectPhoto(_ sender: Any) {
-        let camera = DSCameraHandler(delegate_: self)
-        let optionMenu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        optionMenu.popoverPresentationController?.sourceView = self.view
-        
-        let takePhoto = UIAlertAction(title: "Take Photo", style: .default) { (alert : UIAlertAction!) in
-            camera.getCameraOn(self, canEdit: true)
-        }
-        let sharePhoto = UIAlertAction(title: "Photo Library", style: .default) { (alert : UIAlertAction!) in
-            camera.getPhotoLibraryOn(self, canEdit: true)
-        }
-        let deleteAction = UIAlertAction(title: "Delete Profile Picture", style: .destructive) { (alert : UIAlertAction!) in
-            self.deleteProfilePicture()
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (alert : UIAlertAction!) in
-        }
-        optionMenu.addAction(takePhoto)
-        optionMenu.addAction(sharePhoto)
-        optionMenu.addAction(cancelAction)
-        optionMenu.addAction(deleteAction)
-        self.present(optionMenu, animated: true, completion: nil)
-    }
+    @IBOutlet weak var txtDescription: UITextView!
     
     @IBAction func btnSave(_ sender: UIBarButtonItem) {
         updateProfile()
@@ -46,13 +23,18 @@ class ProfileShopViewController: UIViewController, UIImagePickerControllerDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        btnProfilePic.layer.borderWidth = 2.0
-        btnProfilePic.layer.borderColor = delegate.themeColor.cgColor
-        btnProfilePic.layer.cornerRadius = 90
-        btnProfilePic.clipsToBounds = true
+        
+        if #available(iOS 11.0, *) {
+            self.navigationItem.largeTitleDisplayMode = .never
+        }
         
         txtName.delegate = self
         txtPhone.delegate = self
+        txtDescription.delegate = self
+        txtDescription.sizeToFit()
+        txtDescription.isEditable = true
+        
+        fetchProfile()
     }
 
     override func didReceiveMemoryWarning() {
@@ -60,213 +42,65 @@ class ProfileShopViewController: UIViewController, UIImagePickerControllerDelega
         // Dispose of any resources that can be recreated.
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        image = info[UIImagePickerControllerEditedImage] as! UIImage
-        self.dismiss(animated: true, completion: nil)
-        uploadProfilePicture()
-    }
-    
-    func deleteProfilePicture(){
-        let myUrl = URL(string: shopeeng.URL_DELETE_PROFILE_PICTURE)
-        var request = URLRequest(url:myUrl!)
-        request.httpMethod = "POST"
-        let postString = "id=\(UserDefaults.standard.string(forKey: "Id")!)&token=\(UserDefaults.standard.string(forKey: "Token")!)";
-        request.httpBody = postString.data(using: String.Encoding.utf8);
+    func fetchProfile(){
+        let shop_id = UserDefaults.standard.integer(forKey: "ShopId")
+
+        guard let token = UserDefaults.standard.string(forKey: "Token"), let url = URL(string: "\(self.shopeeng.ipAddress)shop/\(shop_id)") else { return }
         
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        self.btnProfilePic.addSubview(activityIndicator)
-        activityIndicator.frame = self.btnProfilePic.bounds
-        activityIndicator.startAnimating()
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let size = CGSize(width: 40, height: 40)
+        self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
         
         URLSession.shared.dataTask(with: request) {
             (data: Data?, response: URLResponse?, error: Error?) in
             
-            var deleteMessage = String()
+            var name = String()
+            var phone = String()
+            var description = String()
             
             if error != nil
             {
                 print("error=\(error!)")
                 return
             }
-            else{
-                do {
-                    let json = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary
-                    deleteMessage = json!["Message"]! as! String
-                }
-                catch {
-                    print("Error deserializing JSON: \(error)")
-                }
-            }
             
-            OperationQueue.main.addOperation({
-                //calling another function after fetching the json
-                activityIndicator.stopAnimating()
-                self.fetchImage()
-                let alert = UIAlertController(title: "Alert", message: deleteMessage, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
-                    
-                }))
-                self.present(alert, animated: true, completion: nil)
-            })
-            }.resume()
-    }
-    
-    func uploadProfilePicture(){
-        let url = URL(string: shopeeng.URL_UPDATE_PROFILE_PICTURE)
-        var request = URLRequest(url:url!);
-        request.httpMethod = "POST";
-        
-        let param = ["userId" : UserDefaults.standard.string(forKey: "Id")]
-        let boundary = generateBoundaryString()
-        
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        let imageData = UIImageJPEGRepresentation(image, 1)
-        if(imageData==nil)
-        {
-            return;
-        }
-        
-        request.httpBody = createBodyWithParameters(parameters: param as? [String : String], filePathKey: "file", imageDataKey: imageData! as NSData, boundary: boundary) as Data
-        
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        btnProfilePic.addSubview(activityIndicator)
-        activityIndicator.frame = btnProfilePic.bounds
-        activityIndicator.startAnimating()
-        
-        let task = URLSession.shared.dataTask(with: request) {
-            data, response, error in
-            
-            if error != nil {
-                print("error=\(String(describing: error))")
+            guard let data = data else{
                 return
             }
-            
-            var uploadMessage = String()
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary
-                uploadMessage = json!["Message"]! as! String
+                let shop = try JSONDecoder().decode(Shop.self, from: data)
+                print(shop)
+                guard shop.name != nil, shop.description != nil, shop.phone != nil else { return }
+                
+                name = shop.name!
+                phone = shop.phone!
+                description = shop.description!
             }
             catch {
-                print(error)
-            }
-            
-            OperationQueue.main.addOperation {
-                activityIndicator.stopAnimating()
-                self.fetchImage()
-                let alert = UIAlertController(title: "Alert", message: uploadMessage, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
-                    
-                }))
-                self.present(alert, animated: true, completion: nil)
-            }
-        }
-        task.resume()
-    }
-    
-    func createBodyWithParameters(parameters: [String: String]?, filePathKey: String?, imageDataKey: NSData, boundary: String) -> NSData {
-        let body = NSMutableData()
-        
-        if parameters != nil {
-            for (key, value) in parameters! {
-                body.append("--\(boundary)\r\n".data(using: String.Encoding.utf8)!)
-                body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: String.Encoding.utf8)!)
-                body.append("\(value)\r\n".data(using: String.Encoding.utf8)!)
-            }
-        }
-        
-        let filename = UserDefaults.standard.string(forKey: "Id")!+".jpg"
-        let mimetype = "image/jpg"
-        
-        body.append("--\(boundary)\r\n".data(using: String.Encoding.utf8)!)
-        body.append("Content-Disposition: form-data; name=\"\(filePathKey!)\"; filename=\"\(filename)\"\r\n".data(using: String.Encoding.utf8)!)
-        body.append("Content-Type: \(mimetype)\r\n\r\n".data(using: String.Encoding.utf8)!)
-        body.append(imageDataKey as Data)
-        body.append("\r\n".data(using: String.Encoding.utf8)!)
-        body.append("--\(boundary)--\r\n".data(using: String.Encoding.utf8)!)
-        
-        return body
-    }
-    
-    func generateBoundaryString() -> String
-    {
-        return "Boundary-\(NSUUID().uuidString)"
-    }
-    
-    func fetchImage(){
-        let url = shopeeng.URL_PROFILE_PICTURE + UserDefaults.standard.string(forKey: "Id")! + ".jpg"
-        
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        self.view.addSubview(activityIndicator)
-        activityIndicator.frame = self.view.bounds
-        activityIndicator.startAnimating()
-        
-        if let profileURL = URL(string: url) {
-            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                let urlContent = try? Data(contentsOf: profileURL)
-                if let imageData = urlContent{
-                    DispatchQueue.main.async {
-                        self?.btnProfilePic.setBackgroundImage(UIImage(data: imageData), for: .normal)
-                        activityIndicator.stopAnimating()
-                    }
-                }
-                else{
-                    DispatchQueue.main.async(execute: {
-                        self?.btnProfilePic.setBackgroundImage(UIImage(named: "profile"), for: .normal)
-                        activityIndicator.stopAnimating()
-                    })
-                    
-                }
-            }
-        }
-    }
-    
-    func fetchProfile(){
-        let myUrl = URL(string: self.shopeeng.URL_PROFILE)
-        var request = URLRequest(url:myUrl!)
-        request.httpMethod = "POST"
-        let postString = "id=\(UserDefaults.standard.string(forKey: "Id")!)&token=\(UserDefaults.standard.string(forKey: "Token")!)";
-        request.httpBody = postString.data(using: String.Encoding.utf8);
-        
-        URLSession.shared.dataTask(with: request) {
-            (data: Data?, response: URLResponse?, error: Error?) in
-            
-            var username = String()
-            var name = String()
-            
-            if error != nil
-            {
-                print("error=\(error!)")
-                return
-            }
-            else{
-                do {
-                    if let data = data, let json = try JSONSerialization.jsonObject(with: data) as? [String: Any], let userJSON = json["user"] as? [[String: Any]]{
-                        if(!userJSON.isEmpty){
-                            for userDecode in userJSON{
-                                username = (userDecode["username"] as? String)!
-                                name = (userDecode["name"] as? String)!
-                            }
-                        }
-                    }
-                }
-                catch {
-                    print("Error deserializing JSON: \(error)")
-                }
+                print("Error deserializing JSON fetch profile: \(error)")
             }
             
             OperationQueue.main.addOperation({
                 //calling another function after fetching the json
                 self.txtName.text = name
-                self.txtPhone.text = username
+                self.txtPhone.text = phone
+                self.txtDescription.text = description
+                self.txtDescription.sizeToFit()
+                
+                self.stopAnimating()
             })
-            }.resume()
+        }.resume()
     }
     
     func updateProfile(){
-        guard !((txtName.text)?.isEmpty)!, !((txtPhone.text)?.isEmpty)! else{
-            let alert = UIAlertController(title: "Alert", message: "Please fill all required fields", preferredStyle: .alert)
+        guard !((txtName.text)?.isEmpty)! else{
+            let alert = UIAlertController(title: "Alert", message: "Name field cannot be empty", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
                 
             }))
@@ -274,31 +108,48 @@ class ProfileShopViewController: UIViewController, UIImagePickerControllerDelega
             return
         }
         
-        let myUrl = URL(string: self.shopeeng.URL_UPDATE_PROFILE)
-        var request = URLRequest(url:myUrl!)
-        request.httpMethod = "POST"
-        let postString = "id=\(UserDefaults.standard.string(forKey: "Id")!)&token=\(UserDefaults.standard.string(forKey: "Token")!)&name=\(txtName.text!)&username=\(txtPhone.text!)";
-        request.httpBody = postString.data(using: String.Encoding.utf8);
+        guard let name = txtName.text, let phone = txtPhone.text, let description = txtDescription.text else { return }
+
+        let shop_id = UserDefaults.standard.integer(forKey: "ShopId")
+        guard let token = UserDefaults.standard.string(forKey: "Token") else { return }
         
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        self.view.addSubview(activityIndicator)
-        activityIndicator.frame = self.view.bounds
-        activityIndicator.startAnimating()
+        guard let url = URL(string: "\(self.shopeeng.ipAddress)shop/\(shop_id)") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        let parameters = ["name": name, "phone": phone, "description": description]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+        }
+        catch {
+            print(error.localizedDescription)
+        }
+        
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        let size = CGSize(width: 40, height: 40)
+        self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
         
         URLSession.shared.dataTask(with: request) {
             (data: Data?, response: URLResponse?, error: Error?) in
             
-            if error != nil
-            {
-                print("error=\(error!)")
-                return
-            }
+            guard let data = data, error == nil else { return }
             
-            var message = String()
+            var message = ""
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary
-                message = json!["Message"]! as! String
+                let json = try JSONDecoder().decode(User.self, from: data)
+                
+                if (json.errors == nil){
+                    
+                }
+                else{
+                    if(json.errors?.name != nil){
+                        message = (json.errors?.name![0])!
+                    }
+                }
             }
             catch {
                 print("Error deserializing JSON: \(error)")
@@ -306,14 +157,24 @@ class ProfileShopViewController: UIViewController, UIImagePickerControllerDelega
             
             OperationQueue.main.addOperation({
                 //calling another function after fetching the json
-                activityIndicator.stopAnimating()
-                let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
-                    
-                }))
-                self.present(alert, animated: true, completion: nil)
+                self.stopAnimating()
+                if message == ""{
+                    self.showAlert(title: "Profile Update", message: "Your profile has been updated")
+                    self.fetchProfile()
+                }
+                else{
+                    self.showAlert(title: "Profile Update Failed", message: message)
+                }
             })
-            }.resume()
+        }.resume()
+    }
+    
+    func showAlert(title: String, message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
+            
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
     
     let delegate = UIApplication.shared.delegate as! AppDelegate

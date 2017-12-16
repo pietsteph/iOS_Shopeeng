@@ -11,14 +11,21 @@ import UIKit
 
 class ProductModel : Equatable{
     
-    var image: UIImage?
-    var imageURL: String?
+    var imageURL: String
     let id: Int
-    let shop_id: Int
     let name: String
     let description: String
-    let stock: Int
     let price: Int
+    let image: String
+    let total_images: Int
+    let stock: Int
+    let view: Int
+    let sold: Int
+    let condition: String
+    let heavy: Double
+    let is_insurance: Int
+    let shop_id: Int
+    let is_enabled: Int
     let rating: Double
     
     init(){
@@ -30,9 +37,17 @@ class ProductModel : Equatable{
         self.price = 0
         self.rating = 0
         self.imageURL = "imageURL"
+        self.image = "image"
+        self.total_images = 0
+        self.view = 0
+        self.sold = 0
+        self.heavy = 0.0
+        self.condition = "condition"
+        self.is_insurance = 0
+        self.is_enabled = 0
     }
     
-    init(id:Int, shop_id:Int, name:String, description:String, stock:Int, price:Int, rating:Double, imageURL:String) {
+    init(id:Int, shop_id:Int, name:String, description:String, stock:Int, price:Int, rating:Double, imageURL:String, image:String, total_images:Int, view:Int, sold:Int, heavy:Double, condition:String, is_insurance:Int, is_enabled:Int) {
         self.id = id
         self.shop_id = shop_id
         self.name = name
@@ -41,14 +56,15 @@ class ProductModel : Equatable{
         self.price = price
         self.rating = rating
         self.imageURL = imageURL
+        self.image = "image"
+        self.total_images = total_images
+        self.view = view
+        self.sold = sold
+        self.heavy = heavy
+        self.condition = condition
+        self.is_insurance = is_insurance
+        self.is_enabled = is_enabled
     }
-    
-//    func imageURL() -> URL? {
-//        if let url =  URL(string: "http://shopeeng.000webhostapp.com/shop/product/\(id).jpg") {
-//            return url
-//        }
-//        return nil
-//    }
 }
 
 func ==(lhs: ProductModel, rhs: ProductModel) -> Bool {

@@ -56,11 +56,14 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func deleteProfilePicture(){
-        let myUrl = URL(string: shopeeng.URL_DELETE_PROFILE_PICTURE)
-        var request = URLRequest(url:myUrl!)
-        request.httpMethod = "POST"
-        let postString = "id=\(UserDefaults.standard.string(forKey: "Id")!)&token=\(UserDefaults.standard.string(forKey: "Token")!)";
-        request.httpBody = postString.data(using: String.Encoding.utf8);
+        
+        let id = UserDefaults.standard.integer(forKey: "Id")
+        guard let token = UserDefaults.standard.string(forKey: "Token") else { return }
+        
+        guard let url = URL(string: "\(shopeeng.ipAddress)user/\(id)") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         let size = CGSize(width: 40, height: 40)
         self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
@@ -79,8 +82,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             guard let data = data else {return}
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
-                deleteMessage = json!["Message"]! as! String
+//                let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
+//                deleteMessage = json!["Message"]! as! String
             }
             catch {
                 print("Error deserializing JSON: \(error)")
@@ -114,7 +117,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
         loader.startAnimating()
         
         Alamofire.upload(multipartFormData: { (multipartFormData) in
-            multipartFormData.append(imageData, withName: "image_user", fileName: "\(id).jpg", mimeType: "image/jpg")
+            multipartFormData.append(imageData, withName: "image_user", fileName: "\(id)", mimeType: "image/jpg")
         }, to: "\(shopeeng.ipAddress)user", headers: headers,
            encodingCompletion: { encodingResult in
             switch encodingResult {
@@ -129,7 +132,6 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                     self.present(alert, animated: true, completion: nil)
                     
                     self.fetchImage()
-//                    debugPrint(response)
                 }
             case .failure(let encodingError):
                 print(encodingError)
@@ -166,12 +168,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     func fetchProfile(){
         let user_id = UserDefaults.standard.integer(forKey: "Id")
-        let token = UserDefaults.standard.string(forKey: "Token")
+        guard let token = UserDefaults.standard.string(forKey: "Token") else { return }
         
         let myUrl = URL(string: "\(self.shopeeng.ipAddress)user/\(user_id)")
         var request = URLRequest(url:myUrl!)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(token!)", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
@@ -197,9 +199,12 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 return
             }
             
+            var date = Date()
+            
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
-
+                guard user.name != nil, user.email != nil, user.phone != nil else { return }
+                
                 name = user.name!
                 email = user.email!
                 phone = user.phone!
@@ -207,10 +212,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 guard let strDate = user.birth else { return }
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "YYYY-MM-dd"
-                let date = dateFormatter.date(from: strDate)
+                date = dateFormatter.date(from: strDate)!
                 dateFormatter.dateFormat = "MMM d, yyyy"
                 dateFormatter.dateStyle = .long
-                birth = "\(dateFormatter.string(from: date!))"
+                birth = "\(dateFormatter.string(from: date))"
                 
                 switch user.gender! {
                 case "M":
@@ -222,20 +227,21 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 }
             }
             catch {
-                print("Error deserializing JSON: \(error)")
+                print("Error deserializing JSON fetch profile: \(error)")
             }
             
             OperationQueue.main.addOperation({
                 //calling another function after fetching the json
                 self.txtName.text = name
                 self.txtUsername.text = email
+                self.datePickerBirth.date = date
                 self.txtBirth.text = birth
                 self.txtPhoneNumber.text = phone
                 self.txtGender.text = gender
                 
                 self.stopAnimating()
             })
-            }.resume()
+        }.resume()
     }
     
     func updateProfile(){
@@ -248,22 +254,42 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             return
         }
         
+        guard let name = txtName.text, let email = txtUsername.text, let phone = txtPhoneNumber.text, var birth = txtBirth.text, var gender = txtGender.text else { return }
+        
+        switch gender {
+        case "Male":
+            gender = "M"
+        case "Female":
+            gender = "F"
+        default:
+            gender = "M"
+        }
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-dd"
+        birth = formatter.string(from: datePickerBirth.date)
+        
         let id = UserDefaults.standard.integer(forKey: "Id")
         guard let token = UserDefaults.standard.string(forKey: "Token") else {return}
         
-        guard let url = URL(string: "\(self.shopeeng.ipAddress)/\(id)") else { return }
+        guard let url = URL(string: "\(self.shopeeng.ipAddress)user/\(id)") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
-        let postString = "id=\(UserDefaults.standard.string(forKey: "Id")!)&name=\(txtName.text!)&username=\(txtUsername.text!)";
-        request.httpBody = postString.data(using: String.Encoding.utf8);
+        let parameters = ["name": name, "email": email, "phone": phone, "birth": birth, "gender": gender]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+        }
+        catch {
+            print(error.localizedDescription)
+        }
+        
         request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-        self.view.addSubview(activityIndicator)
-        activityIndicator.frame = self.view.bounds
-        activityIndicator.startAnimating()
+        let size = CGSize(width: 40, height: 40)
+        self.startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: self.delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
         
         URLSession.shared.dataTask(with: request) {
             (data: Data?, response: URLResponse?, error: Error?) in
@@ -274,11 +300,42 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
                 return
             }
             
-            var message = String()
+            guard let data = data else { return }
+            
+            var message = ""
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data!, options: []) as? NSDictionary
-                message = json!["Message"]! as! String
+                let json = try JSONDecoder().decode(Register.self, from: data)
+
+                if (json.errors == nil){
+                    
+                }
+                else{
+                    if(json.errors?.name != nil){
+                        message = (json.errors?.name![0])!
+                    }
+                        
+                    else if(json.errors?.email != nil){
+                        message = (json.errors?.email![0])!
+                    }
+                        
+                    else if(json.errors?.password != nil){
+                        message = (json.errors?.password![0])!
+                        
+                    }
+                        
+                    else if(json.errors?.phone != nil){
+                        message = (json.errors?.phone![0])!
+                    }
+                        
+                    else if(json.errors?.birth != nil){
+                        message = (json.errors?.birth![0])!
+                    }
+                        
+                    else if(json.errors?.gender != nil){
+                        message = (json.errors?.gender![0])!
+                    }
+                }
             }
             catch {
                 print("Error deserializing JSON: \(error)")
@@ -286,14 +343,24 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             OperationQueue.main.addOperation({
                 //calling another function after fetching the json
-                activityIndicator.stopAnimating()
-                let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
-
-                }))
-                self.present(alert, animated: true, completion: nil)
+                self.stopAnimating()
+                if message == ""{
+                    self.showAlert(title: "Profile Update", message: "Your profile has been updated")
+                    self.fetchProfile()
+                }
+                else{
+                    self.showAlert(title: "Profile Update Failed", message: message)
+                }
             })
         }.resume()
+    }
+    
+    func showAlert(title: String, message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action:UIAlertAction)->Void in
+            
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
     
     let delegate = UIApplication.shared.delegate as! AppDelegate

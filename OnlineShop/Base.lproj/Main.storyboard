@@ -439,17 +439,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ald-Bg-Dgg">
-                                <rect key="frame" x="100" y="124" width="214" height="214"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="Ald-Bg-Dgg" secondAttribute="height" multiplier="1:1" id="iBO-zp-OzC"/>
-                                </constraints>
-                                <connections>
-                                    <action selector="selectPhoto:" destination="GsT-s1-g7R" eventType="touchUpInside" id="BMC-wr-lmT"/>
-                                </connections>
-                            </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="yKX-q3-ea7">
-                                <rect key="frame" x="60" y="368" width="294" height="145.66666666666663"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="yKX-q3-ea7">
+                                <rect key="frame" x="60" y="124" width="294" height="396"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dvL-sk-AtU">
                                         <rect key="frame" x="0.0" y="0.0" width="294" height="20.333333333333332"/>
@@ -458,49 +449,64 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Shop Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="llb-xS-aPi">
-                                        <rect key="frame" x="0.0" y="35.333333333333314" width="294" height="30"/>
+                                        <rect key="frame" x="0.0" y="35.333333333333343" width="294" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no" textContentType="name"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     </textField>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone Number" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="efK-aZ-MPb">
-                                        <rect key="frame" x="0.0" y="80.333333333333314" width="294" height="20.333333333333329"/>
+                                        <rect key="frame" x="0.0" y="80.333333333333343" width="294" height="20.333333333333329"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" red="0.95686274510000002" green="0.5505167258" blue="0.037565705579999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="y5Q-8t-AHU">
-                                        <rect key="frame" x="0.0" y="115.66666666666669" width="294" height="30"/>
+                                        <rect key="frame" x="0.0" y="115.66666666666666" width="294" height="30"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="phonePad" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YGx-wx-qhR">
+                                        <rect key="frame" x="0.0" y="160.66666666666669" width="294" height="20.333333333333343"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.95686274510000002" green="0.5505167258" blue="0.037565705579999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="muB-My-Esc">
+                                        <rect key="frame" x="0.0" y="196" width="294" height="200"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                        <dataDetectorType key="dataDetectorTypes" link="YES"/>
+                                    </textView>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="R6y-QF-NZF" firstAttribute="trailing" secondItem="yKX-q3-ea7" secondAttribute="trailing" constant="60" id="E0j-dI-iQX"/>
-                            <constraint firstItem="Ald-Bg-Dgg" firstAttribute="leading" secondItem="R6y-QF-NZF" secondAttribute="leading" constant="100" id="PEx-iT-w0d"/>
-                            <constraint firstItem="yKX-q3-ea7" firstAttribute="leading" secondItem="R6y-QF-NZF" secondAttribute="leading" constant="60" id="PI1-EK-Wb7"/>
-                            <constraint firstItem="yKX-q3-ea7" firstAttribute="top" secondItem="Ald-Bg-Dgg" secondAttribute="bottom" constant="30" id="Zyl-g8-vjY"/>
-                            <constraint firstItem="R6y-QF-NZF" firstAttribute="trailing" secondItem="Ald-Bg-Dgg" secondAttribute="trailing" constant="100" id="ggL-Ho-kBO"/>
-                            <constraint firstItem="Ald-Bg-Dgg" firstAttribute="top" secondItem="R6y-QF-NZF" secondAttribute="top" constant="60" id="zUL-70-Gto"/>
+                            <constraint firstItem="R6y-QF-NZF" firstAttribute="trailing" secondItem="yKX-q3-ea7" secondAttribute="trailing" constant="60" id="0Q9-6u-cIc"/>
+                            <constraint firstItem="yKX-q3-ea7" firstAttribute="leading" secondItem="R6y-QF-NZF" secondAttribute="leading" constant="60" id="6ZW-M5-9iO"/>
+                            <constraint firstItem="yKX-q3-ea7" firstAttribute="top" secondItem="R6y-QF-NZF" secondAttribute="top" constant="60" id="Wbf-Io-y4A"/>
+                            <constraint firstItem="yKX-q3-ea7" firstAttribute="centerX" secondItem="Wh0-WP-vBF" secondAttribute="centerX" id="i6B-z1-haY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="R6y-QF-NZF"/>
                     </view>
                     <navigationItem key="navigationItem" title="Shop Profile" id="cQv-pj-1oF">
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="sGX-lT-hW2"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="sGX-lT-hW2">
+                            <connections>
+                                <action selector="btnSave:" destination="GsT-s1-g7R" id="auF-72-8ly"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="btnProfilePic" destination="Ald-Bg-Dgg" id="iQr-Wi-YQv"/>
+                        <outlet property="txtDescription" destination="muB-My-Esc" id="In9-Kc-Dsu"/>
                         <outlet property="txtName" destination="llb-xS-aPi" id="0BV-1z-lMf"/>
                         <outlet property="txtPhone" destination="y5Q-8t-AHU" id="tLA-03-kju"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QLx-cZ-5GD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2022" y="2440"/>
+            <point key="canvasLocation" x="2021.7391304347827" y="2439.9456521739135"/>
         </scene>
         <!--Register-->
         <scene sceneID="zsm-Rh-MYq">

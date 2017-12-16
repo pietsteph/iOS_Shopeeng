@@ -72,22 +72,12 @@ class HomeTableViewController: UITableViewController, UISearchResultsUpdating, U
         UIView.animate(withDuration: 0.5, animations: {
             self.navigationItem.rightBarButtonItems = nil
         }) { (finished) in
-            //            self.searchController.searchBar.alpha = 0.0
-            
-//            UIView.animate(withDuration: 0.5, animations: {
-//                self.searchController.searchBar.alpha = 1.0
-//            }, completion: { (finished) in
-//                self.navigationItem.titleView = self.searchController.searchBar
-//                self.searchController.searchBar.becomeFirstResponder()
-//            })
-            
             self.navigationItem.titleView = UIView()
             UIView.transition(with: self.navigationItem.titleView!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: {
                 self.navigationItem.titleView = self.searchController.searchBar
                 self.searchController.searchBar.becomeFirstResponder()
             })
         }
-        //        self.present(searchController, animated: true, completion: nil)
     }
     
     var searchButton = UIBarButtonItem()
@@ -196,35 +186,13 @@ class HomeTableViewController: UITableViewController, UISearchResultsUpdating, U
         let bgColorView = UIView()
         bgColorView.backgroundColor = delegate.themeColor
         myCell.selectedBackgroundView = bgColorView
-//        myCell.imageProduct.image = products[indexPath.row].image
-        
-//        myCell.imageProduct.image = UIImage(named: "cached")
-        myCell.imageProduct.lazyLoadImage(link: filteredProducts[indexPath.row].imageURL!, contentMode: .scaleAspectFit)
-        
-//        myCell.imageProduct.contentMode = .scaleAspectFit
-//        if let img = cache.object(forKey: self.filteredProducts[indexPath.row].imageURL as AnyObject){
-//            myCell.imageProduct.image = img
-//        }
-//        else{
-//            myCell.imageProduct.image = UIImage(named: "cached")
-//
-//            DispatchQueue.global().async {
-//                let urlContent = try? Data(contentsOf: URL(string: self.filteredProducts[indexPath.row].imageURL!)!)
-//                if let imageData = urlContent {
-//                    DispatchQueue.main.async {
-//                        myCell.imageProduct.image = UIImage(data: imageData) ?? UIImage(named: "cached")
-//                        self.cache.setObject(UIImage(data: imageData)!, forKey: self.filteredProducts[indexPath.row].imageURL as AnyObject)
-//                    }
-//                }
-//                else{
-//                    myCell.imageProduct.image = UIImage(named: "cached")
-//                }
-//            }
-//        }
-        
+
+        myCell.imageProduct.lazyLoadImage(link: filteredProducts[indexPath.row].imageURL, contentMode: .scaleAspectFit)
+
         myCell.title.text = filteredProducts[indexPath.row].name
         let price = shopeeng.priceToString(integer: filteredProducts[indexPath.row].price)
         myCell.price.text = "Rp. \(price)"
+        
         myCell.imageStar.image = UIImage(named: "star")?.withRenderingMode(.alwaysTemplate)
         myCell.imageStar.tintColor = .yellow
         myCell.rating.text = "\(filteredProducts[indexPath.row].rating)"

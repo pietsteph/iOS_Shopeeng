@@ -168,7 +168,7 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
         
         let url = products[indexPath.section][indexPath.row].imageURL
         
-        URLSession.shared.dataTask( with: URL(string: url!)!, completionHandler: {
+        URLSession.shared.dataTask( with: URL(string: url)!, completionHandler: {
             (data, response, error) -> Void in
             
             guard let data = data, error == nil else {
@@ -221,6 +221,7 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
 
     // Uncomment this method to specify if the specified item should be selected
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        print(products[indexPath.section][indexPath.row].imageURL)
         return true
     }
 
