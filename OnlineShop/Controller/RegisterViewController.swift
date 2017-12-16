@@ -114,8 +114,8 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         
         let parameters = ["name": name, "email": email, "password": password, "password_confirmation": confirmation, "phone": phone, "birth": birth, "gender": gender, "role":role]
         
-        let url = URL(string: "\(self.shopeeng.ipAddress)register")
-        var request = URLRequest(url:url!)
+        guard let url = URL(string: "\(self.shopeeng.ipAddress)register") else { return }
+        var request = URLRequest(url:url)
         request.httpMethod = "POST"
         
         do {

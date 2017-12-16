@@ -221,7 +221,6 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
 
     // Uncomment this method to specify if the specified item should be selected
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        print(products[indexPath.section][indexPath.row].imageURL)
         return true
     }
 

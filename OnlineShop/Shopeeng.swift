@@ -54,6 +54,8 @@ struct Shop:Decodable{
     let name: String?
     let phone: String?
     let description: String?
+    let user_id: Int?
+    let is_enabled: Int?
 }
 
 struct HomeProducts:Decodable{
@@ -77,6 +79,12 @@ struct Product:Decodable{
     let shop_id: Int?
     let is_enabled: Int?
     let rating: Double?
+    let review: Int?
+}
+
+struct Buy:Decodable{
+    let success: Bool?
+    let warning: String?
 }
 
 struct Logout:Decodable{
@@ -92,7 +100,7 @@ class Shopeeng{
     
     func homeCollection(completion: @escaping (_ results: [[ProductModel]]) -> Void){
         guard let url = URL(string: "\(self.ipAddress)product"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
-        print(url)
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -114,7 +122,6 @@ class Shopeeng{
             
             do {
                 let json = try JSONDecoder().decode(HomeProducts.self, from: data)
-                print(json)
                 
                 var popular = [ProductModel]()
                 var new = [ProductModel]()
@@ -130,9 +137,9 @@ class Shopeeng{
                     let image = product.image,
                     let total_images = product.total_images,
                     let view = product.view, let sold = product.sold, let condition = product.condition,
-                    let heavy = product.heavy, let is_insurance = product.is_insurance, let is_enabled = product.is_enabled else {  break }
+                    let heavy = product.heavy,let is_insurance = product.is_insurance, let is_enabled = product.is_enabled, let review = product.review else {  break }
 
-                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled)
+                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled, review: review)
 
                     popular.append(decodedProduct)
                 }
@@ -148,9 +155,9 @@ class Shopeeng{
                         let image = product.image,
                         let total_images = product.total_images,
                         let view = product.view, let sold = product.sold, let condition = product.condition,
-                        let heavy = product.heavy, let is_insurance = product.is_insurance, let is_enabled = product.is_enabled else { break }
+                        let heavy = product.heavy, let is_insurance = product.is_insurance, let is_enabled = product.is_enabled, let review = product.review else { break }
                     
-                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled)
+                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled, review: review)
 
                     new.append(decodedProduct)
                 }
@@ -186,7 +193,7 @@ class Shopeeng{
             
             do {
                 let json = try JSONDecoder().decode([Product].self, from: data)
-                print(json)
+
                 for product in json {
                     guard let id = product.id,
                         let shop_id = product.shop_id,
@@ -202,11 +209,11 @@ class Shopeeng{
                         let condition = product.condition,
                         let heavy = product.heavy,
                         let is_insurance = product.is_insurance,
-                        let is_enabled = product.is_enabled else { break }
+                        let is_enabled = product.is_enabled, let review = product.review else { break }
                     
                     print(id, name)
                     
-                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled)
+                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled, review: review)
                     
                     products.append(decodedProduct)
                 }

@@ -27,6 +27,7 @@ class ProductModel : Equatable{
     let shop_id: Int
     let is_enabled: Int
     let rating: Double
+    let review: Int
     
     init(){
         self.id = 0
@@ -45,9 +46,10 @@ class ProductModel : Equatable{
         self.condition = "condition"
         self.is_insurance = 0
         self.is_enabled = 0
+        self.review = 0
     }
     
-    init(id:Int, shop_id:Int, name:String, description:String, stock:Int, price:Int, rating:Double, imageURL:String, image:String, total_images:Int, view:Int, sold:Int, heavy:Double, condition:String, is_insurance:Int, is_enabled:Int) {
+    init(id:Int, shop_id:Int, name:String, description:String, stock:Int, price:Int, rating:Double, imageURL:String, image:String, total_images:Int, view:Int, sold:Int, heavy:Double, condition:String, is_insurance:Int, is_enabled:Int, review:Int) {
         self.id = id
         self.shop_id = shop_id
         self.name = name
@@ -64,6 +66,7 @@ class ProductModel : Equatable{
         self.condition = condition
         self.is_insurance = is_insurance
         self.is_enabled = is_enabled
+        self.review = review
     }
 }
 
