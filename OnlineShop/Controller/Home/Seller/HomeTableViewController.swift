@@ -41,8 +41,6 @@ class HomeTableViewController: UITableViewController, UISearchResultsUpdating, U
     var urlCache = URLCache()
     let cache = NSCache<AnyObject, UIImage>()
     
-    @IBOutlet weak var right1: UIBarButtonItem!
-    @IBOutlet weak var right2: UIBarButtonItem!
     @objc func refresh(){
         urlCache.removeAllCachedResponses()
 //        cache.removeAllObjects()

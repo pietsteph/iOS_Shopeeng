@@ -9,7 +9,7 @@
 import UIKit
 import NVActivityIndicatorView
 
-class ProfileShopViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable, UITextViewDelegate {
+class ProfileShopViewController: UITableViewController, UITextFieldDelegate, NVActivityIndicatorViewable, UITextViewDelegate {
     
     let shopeeng = Shopeeng()
 

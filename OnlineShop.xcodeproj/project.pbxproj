@@ -30,6 +30,11 @@
 		EEC58A7D1FBED8B5004BFF4D /* OnlineShopUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC58A7C1FBED8B5004BFF4D /* OnlineShopUITests.swift */; };
 		EED2ED091FE5AC22002F8954 /* BuyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED081FE5AC22002F8954 /* BuyTableViewController.swift */; };
 		EED2ED0B1FE5AD08002F8954 /* CourierTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED0A1FE5AD08002F8954 /* CourierTableViewController.swift */; };
+		EED2ED0E1FE6CB67002F8954 /* ShopRegisterTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED0D1FE6CB67002F8954 /* ShopRegisterTableViewController.swift */; };
+		EED2ED111FE6F21A002F8954 /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED101FE6F21A002F8954 /* SearchTableViewController.swift */; };
+		EED2ED131FE6F22D002F8954 /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED121FE6F22D002F8954 /* SearchTableViewCell.swift */; };
+		EED2ED161FE6F268002F8954 /* ShopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED151FE6F268002F8954 /* ShopViewController.swift */; };
+		EED2ED181FE6F27C002F8954 /* ShopCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED2ED171FE6F27C002F8954 /* ShopCollectionViewCell.swift */; };
 		EEEFBB691FD2728B001C3F41 /* CartTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEEFBB681FD2728B001C3F41 /* CartTableViewController.swift */; };
 		EEF3F92F1FE022520025ABB9 /* HomeCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF3F92E1FE022520025ABB9 /* HomeCollectionViewController.swift */; };
 		EEF3F9311FE169320025ABB9 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEF3F9301FE169320025ABB9 /* DetailViewController.swift */; };
@@ -87,6 +92,11 @@
 		EEC58A7E1FBED8B5004BFF4D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EED2ED081FE5AC22002F8954 /* BuyTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyTableViewController.swift; sourceTree = "<group>"; };
 		EED2ED0A1FE5AD08002F8954 /* CourierTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierTableViewController.swift; sourceTree = "<group>"; };
+		EED2ED0D1FE6CB67002F8954 /* ShopRegisterTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopRegisterTableViewController.swift; sourceTree = "<group>"; };
+		EED2ED101FE6F21A002F8954 /* SearchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewController.swift; sourceTree = "<group>"; };
+		EED2ED121FE6F22D002F8954 /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
+		EED2ED151FE6F268002F8954 /* ShopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopViewController.swift; sourceTree = "<group>"; };
+		EED2ED171FE6F27C002F8954 /* ShopCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopCollectionViewCell.swift; sourceTree = "<group>"; };
 		EEEFBB681FD2728B001C3F41 /* CartTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartTableViewController.swift; sourceTree = "<group>"; };
 		EEF3F92E1FE022520025ABB9 /* HomeCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewController.swift; sourceTree = "<group>"; };
 		EEF3F9301FE169320025ABB9 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
@@ -151,12 +161,13 @@
 		EE7879901FC85681009E3A22 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				EED2ED0C1FE6CB25002F8954 /* Login & Register */,
 				EE7C4DDC1FCC4109004DCE26 /* Home */,
+				EED2ED0F1FE6F1F8002F8954 /* Search */,
+				EED2ED141FE6F243002F8954 /* Shop */,
 				EEEFBB671FD27273001C3F41 /* Cart */,
 				EEC4BA4F1FDBD73200248367 /* Order List */,
 				EE7879A31FCBFF7A009E3A22 /* Settings */,
-				EE205C421FC72A6000E54F2A /* LoginViewController.swift */,
-				EE78799D1FC9B958009E3A22 /* RegisterViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -245,6 +256,34 @@
 				EEC58A7E1FBED8B5004BFF4D /* Info.plist */,
 			);
 			path = OnlineShopUITests;
+			sourceTree = "<group>";
+		};
+		EED2ED0C1FE6CB25002F8954 /* Login & Register */ = {
+			isa = PBXGroup;
+			children = (
+				EE205C421FC72A6000E54F2A /* LoginViewController.swift */,
+				EE78799D1FC9B958009E3A22 /* RegisterViewController.swift */,
+				EED2ED0D1FE6CB67002F8954 /* ShopRegisterTableViewController.swift */,
+			);
+			path = "Login & Register";
+			sourceTree = "<group>";
+		};
+		EED2ED0F1FE6F1F8002F8954 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				EED2ED101FE6F21A002F8954 /* SearchTableViewController.swift */,
+				EED2ED121FE6F22D002F8954 /* SearchTableViewCell.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		EED2ED141FE6F243002F8954 /* Shop */ = {
+			isa = PBXGroup;
+			children = (
+				EED2ED151FE6F268002F8954 /* ShopViewController.swift */,
+				EED2ED171FE6F27C002F8954 /* ShopCollectionViewCell.swift */,
+			);
+			path = Shop;
 			sourceTree = "<group>";
 		};
 		EEEFBB671FD27273001C3F41 /* Cart */ = {
@@ -493,13 +532,18 @@
 				EE7C4DDE1FCC431E004DCE26 /* HomeCollectionViewCell.swift in Sources */,
 				EE663F771FD5390300C78AE0 /* HomeTableViewCell.swift in Sources */,
 				EE0360871FD2A138005FDCBE /* SectionHeaderCollectionReusableView.swift in Sources */,
+				EED2ED111FE6F21A002F8954 /* SearchTableViewController.swift in Sources */,
 				EE78799C1FC9A47D009E3A22 /* SettingsTableViewCell.swift in Sources */,
 				EE663F731FD523C300C78AE0 /* ProductModel.swift in Sources */,
+				EED2ED0E1FE6CB67002F8954 /* ShopRegisterTableViewController.swift in Sources */,
+				EED2ED181FE6F27C002F8954 /* ShopCollectionViewCell.swift in Sources */,
 				EEF3F9311FE169320025ABB9 /* DetailViewController.swift in Sources */,
 				EEACAA801FE5923D0006DEDC /* ShopModel.swift in Sources */,
 				EEFAA2231FD009080019F356 /* AddProductsViewController.swift in Sources */,
 				EE78799E1FC9B958009E3A22 /* RegisterViewController.swift in Sources */,
+				EED2ED161FE6F268002F8954 /* ShopViewController.swift in Sources */,
 				EEC58A5B1FBED8B5004BFF4D /* AppDelegate.swift in Sources */,
+				EED2ED131FE6F22D002F8954 /* SearchTableViewCell.swift in Sources */,
 				EEEFBB691FD2728B001C3F41 /* CartTableViewController.swift in Sources */,
 				EED2ED0B1FE5AD08002F8954 /* CourierTableViewController.swift in Sources */,
 				EE78798C1FC85325009E3A22 /* Shopeeng.swift in Sources */,

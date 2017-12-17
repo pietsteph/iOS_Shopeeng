@@ -82,8 +82,8 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             guard let data = data else {return}
             
             do {
-//                let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
-//                deleteMessage = json!["Message"]! as! String
+                let json = try JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary
+                deleteMessage = json!["Message"]! as! String
             }
             catch {
                 print("Error deserializing JSON: \(error)")
@@ -103,11 +103,10 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
     }
     
     func uploadProfilePicture(){
-        guard let imageData = UIImageJPEGRepresentation(image, 1), let id = UserDefaults.standard.string(forKey: "Id") else { return }
+        guard let imageData = UIImageJPEGRepresentation(image, 1), let id = UserDefaults.standard.string(forKey: "Id"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
         
-        let token = UserDefaults.standard.string(forKey: "Token")
         let headers: HTTPHeaders = [
-            "Authorization": "Bearer \(token!)",
+            "Authorization": "Bearer \(token)",
             "Accept": "application/json"
         ]
         
@@ -203,6 +202,7 @@ class ProfileViewController: UIViewController, UIImagePickerControllerDelegate, 
             
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
+//                print(user)
                 guard user.name != nil, user.email != nil, user.phone != nil else { return }
                 
                 name = user.name!

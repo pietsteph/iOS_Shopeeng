@@ -9,10 +9,10 @@
 import UIKit
 import NVActivityIndicatorView
 
-class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
+class RegisterViewController: UITableViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, NVActivityIndicatorViewable {
     
     @IBOutlet weak var txtName: UITextField!
-    @IBOutlet weak var txtUsername: UITextField!
+    @IBOutlet weak var txtEmail: UITextField!
     @IBOutlet weak var txtPhoneNumber: UITextField!
     @IBOutlet weak var txtBirth: UITextField!
     @IBOutlet weak var txtGender: UITextField!
@@ -22,26 +22,7 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
     
     let shopeeng = Shopeeng()
     let delegate = UIApplication.shared.delegate as! AppDelegate
-    let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     var registered:Bool = false
-    
-    func errorAlert(message:String, code:Int){
-        let alert = UIAlertController(title: "Register", message: message, preferredStyle: .alert)
-        if code == 1{
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
-                CATransaction.setCompletionBlock({
-                    self.navigationController?.popViewController(animated: true)
-                    self.dismiss(animated: true, completion: nil)
-                })
-            }))
-        }
-        else{
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
-                
-            }))
-        }
-        self.present(alert, animated: true, completion: nil)
-    }
     
     let pickerViewRole = UIPickerView()
     let datePickerBirth = UIDatePicker()
@@ -60,7 +41,7 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         
         //Textfield Setup
         txtName.delegate = self
-        txtUsername.delegate = self
+        txtEmail.delegate = self
         txtPassword.delegate = self
         txtRepeat.delegate = self
         txtRole.delegate = self
@@ -83,20 +64,21 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         
         //Dummy
         txtName.text = "Cynthia"
-        txtUsername.text = "ck@ckckck.wow"
+        txtEmail.text = "ck@ckckck.wow"
         txtPhoneNumber.text = "1238772628"
         txtGender.text = pickOptionGender[1]
         txtPassword.text = "123456"
         txtRepeat.text = "123456"
+        txtRole.text = pickOptionRole[1]
     }
     
     @objc func register() {
-        guard !(self.txtName.text?.isEmpty)!, !(self.txtUsername.text?.isEmpty)!, !(self.txtPassword.text?.isEmpty)!, !(self.txtRepeat.text?.isEmpty)!, !(self.txtRole.text?.isEmpty)!, !(self.txtPhoneNumber.text?.isEmpty)!, !(self.txtBirth.text?.isEmpty)!, !(self.txtGender.text?.isEmpty)! else {
+        guard !(self.txtName.text?.isEmpty)!, !(self.txtEmail.text?.isEmpty)!, !(self.txtPassword.text?.isEmpty)!, !(self.txtRepeat.text?.isEmpty)!, !(self.txtRole.text?.isEmpty)!, !(self.txtPhoneNumber.text?.isEmpty)!, !(self.txtBirth.text?.isEmpty)!, !(self.txtGender.text?.isEmpty)! else {
             errorAlert(message: "Please fill all required fields", code: 0)
             return
         }
         
-        guard let name = txtName.text, let email = txtUsername.text, let password = txtPassword.text, let confirmation = txtRepeat.text, let phone = txtPhoneNumber.text, var birth = txtBirth.text, var gender = txtGender.text, let role = txtRole.text else { return }
+        guard let name = txtName.text, let email = txtEmail.text, let password = txtPassword.text, let confirmation = txtRepeat.text, let phone = txtPhoneNumber.text, var birth = txtBirth.text, var gender = txtGender.text, let role = txtRole.text else { return }
         
         switch gender {
         case "Male":
@@ -155,10 +137,6 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
                     UserDefaults.standard.set(true, forKey: "LoggedIn")
                     UserDefaults.standard.set(false, forKey: "SecureApps")
                     
-                    if UserDefaults.standard.string(forKey: "Role") == "Seller"{
-                        UserDefaults.standard.set(json.shop_id, forKey: "ShopId")
-                      }
-                    
                     self.registered = true
                 }
                 else{
@@ -196,13 +174,35 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
                 //calling another function after fetching the json
                 self.stopAnimating()
                 if(self.registered){
-                    self.errorAlert(message: "Registered successfully", code: 1)
+                    if(UserDefaults.standard.string(forKey: "Role") == "Seller"){
+                        self.performSegue(withIdentifier: "shopRegister", sender: self)
+                    }
+                    else{
+                        self.errorAlert(message: "You are registered successfully", code: 1)
+                    }
                 }
                 else{
                     self.errorAlert(message: message, code: 0)
                 }
             })
-            }.resume()
+        }.resume()
+    }
+    
+    func errorAlert(message:String, code:Int){
+        let alert = UIAlertController(title: "Register", message: message, preferredStyle: .alert)
+        if code == 1{
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
+                CATransaction.setCompletionBlock({
+                    self.view.window!.rootViewController?.dismiss(animated: false, completion: nil)
+                })
+            }))
+        }
+        else{
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
+                
+            }))
+        }
+        self.present(alert, animated: true, completion: nil)
     }
     
     @objc func datePickerValueChanged(sender:UIDatePicker) {
@@ -285,16 +285,26 @@ class RegisterViewController: UIViewController, UITextFieldDelegate, UIPickerVie
         }
         return false
     }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.clear.cgColor
+    }
 
     
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if (segue.identifier == "shopRegister"){
+            var destination = segue.destination
+            if let navController = segue.destination as? UINavigationController{
+                destination = navController.visibleViewController ?? destination
+            }
+            
+            if let vc = destination as? ShopRegisterTableViewController{
+                vc.user_id = UserDefaults.standard.integer(forKey: "Id")
+            }
+        }
     }
-    */
 
 }

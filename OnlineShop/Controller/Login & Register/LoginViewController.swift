@@ -11,7 +11,7 @@ import LocalAuthentication
 import Alamofire
 import NVActivityIndicatorView
 
-class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable {
+class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndicatorViewable{
     
     @IBOutlet weak var txtUsername: UITextField!
     @IBOutlet weak var txtPassword: UITextField!
@@ -24,14 +24,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
     
     @IBAction func btnLogin(_ sender: Any) {
         
-        if(!Reachability.isConnectedToNetwork()){
-            let alert = UIAlertController(title: "No Internet COnnection", message: "Make sure you are connected to a network.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
-                
-            }))
-            self.present(alert, animated: true, completion: nil)
-            return
-        }
+//        if(!Reachability.isConnectedToNetwork()){
+//            let alert = UIAlertController(title: "No Internet COnnection", message: "Make sure you are connected to a network.", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
+//
+//            }))
+//            self.present(alert, animated: true, completion: nil)
+//            return
+//        }
         
         let myUrl = URL(string: "\(shopeeng.ipAddress)login?")
         var request = URLRequest(url:myUrl!)
@@ -209,10 +209,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, NVActivityIndi
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "login"{
-            
-        }
-        
+
     }
 
 }

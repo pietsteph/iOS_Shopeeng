@@ -21,6 +21,7 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
     @IBOutlet weak var insurance: UILabel!
     @IBOutlet weak var weight: UILabel!
     @IBOutlet weak var condition: UILabel!
+    @IBOutlet weak var btnBuy: UIButton!
     
     var product = ProductModel()
     let shopeeng = Shopeeng()
@@ -33,6 +34,20 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
     let delegate = UIApplication.shared.delegate as! AppDelegate
     var activityIndicator:NVActivityIndicatorView? = nil
     
+    @IBAction func buyProduct(_ sender: UIButton) {
+        loadProduct()
+        if product.stock <= 0{
+            let alert = UIAlertController(title: "Purchase Failed", message: "This product has been sold out", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: { (action:UIAlertAction)->Void in
+                    
+            }))
+            self.present(alert, animated: true, completion: nil)
+        }
+        else{
+            performSegue(withIdentifier: "buy", sender: self)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -43,6 +58,13 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
         name.sizeToFit()
         descriptions.sizeToFit()
         
+        loadInfo()
+        
+        downloadImage()
+        loadProduct()
+    }
+    
+    func loadInfo(){
         name.text = product.name
         price.text = "Rp. \(shopeeng.priceToString(integer: product.price))"
         descriptions.text = product.description
@@ -59,11 +81,17 @@ class DetailViewController: UIViewController, NVActivityIndicatorViewable {
         default:
             insurance.text = "Yes"
         }
- 
-        let frame = CGRect(x: image.center.x-40, y: image.center.y-40, width: 40, height: 40)
-        activityIndicator = NVActivityIndicatorView(frame: frame, type: NVActivityIndicatorType.ballPulseSync, color: delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING)
-        image.addSubview(activityIndicator!)
-        downloadImage()
+    }
+    
+    func loadProduct(){
+        let size = CGSize(width: 40, height: 40)
+        startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
+        
+        shopeeng.productInfo(product_id: product.id) { (result) in
+            self.product = result[0]
+            self.loadInfo()
+            self.stopAnimating()
+        }
     }
     
     func downloadImage(){

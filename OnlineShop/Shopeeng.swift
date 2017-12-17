@@ -56,6 +56,8 @@ struct Shop:Decodable{
     let description: String?
     let user_id: Int?
     let is_enabled: Int?
+    let owner: String?
+    let selling: Int?
 }
 
 struct HomeProducts:Decodable{
@@ -95,8 +97,8 @@ struct Logout:Decodable{
 class Shopeeng{
     
 //    let ipAddress = "http://gunnylab.ddns.net:8080/api/"
-    let ipAddress = "http://192.168.0.16:8080/api/"
-//    let ipAddress = "http://127.0.0.1:8080/api/"
+//    let ipAddress = "http://192.168.0.16:8080/api/"
+    let ipAddress = "http://127.0.0.1:8080/api/"
     
     func homeCollection(completion: @escaping (_ results: [[ProductModel]]) -> Void){
         guard let url = URL(string: "\(self.ipAddress)product"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
@@ -176,6 +178,104 @@ class Shopeeng{
         }.resume()
     }
     
+    func searchShope(keyword:String, completion: @escaping (_ results: [ShopModel]) -> Void){
+        
+        let newKeyword = keyword.replacingOccurrences(of: " ", with: "%")
+
+        
+        guard let url = URL(string: "\(ipAddress)shop/search/\(newKeyword)"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        URLSession.shared.dataTask(with: request) {
+            (data, response, error) in
+            guard let data = data, error == nil else {return}
+            
+            var shops = [ShopModel]()
+            
+            do {
+                let json = try JSONDecoder().decode([Shop].self, from: data)
+
+                for shop in json {
+                    guard let id = shop.id,
+                        let name = shop.name,
+                        let phone = shop.phone,
+                        let description = shop.description,
+                        let user_id = shop.user_id,
+                        let is_enabled = shop.is_enabled,
+                        let owner = shop.owner,
+                        let selling = shop.selling else { break }
+                    
+                    let decodedShop = ShopModel(id: id, name: name, phone: phone, description: description, user_id: user_id, is_enabled: is_enabled, owner: owner, selling: selling)
+                    
+                    shops.append(decodedShop)
+                }
+            }
+            catch{
+                print("Error:", error)
+                return
+            }
+            
+            OperationQueue.main.addOperation({
+                completion(shops)
+            })
+        }.resume()
+    }
+    
+    func productInfo(product_id:Int, completion: @escaping (_ results: [ProductModel]) -> Void){
+        guard let url = URL(string: "\(ipAddress)product/\(product_id)"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        
+        URLSession.shared.dataTask(with: request) {
+            (data, response, error) in
+            guard let data = data, error == nil else {return}
+            
+            var products = [ProductModel]()
+            
+            do {
+                let json = try JSONDecoder().decode([Product].self, from: data)
+                
+                for product in json {
+                    guard let id = product.id,
+                        let shop_id = product.shop_id,
+                        let name = product.name,
+                        let description = product.description,
+                        let stock = product.stock,
+                        let price = product.price,
+                        let rating = product.rating,
+                        let image = product.image,
+                        let total_images = product.total_images,
+                        let view = product.view,
+                        let sold = product.sold,
+                        let condition = product.condition,
+                        let heavy = product.heavy,
+                        let is_insurance = product.is_insurance,
+                        let is_enabled = product.is_enabled, let review = product.review else { break }
+                    
+                    let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled, review: review)
+                    
+                    products.append(decodedProduct)
+                }
+            }
+            catch{
+                print("Error:", error)
+                return
+            }
+            
+            OperationQueue.main.addOperation({
+                completion(products)
+            })
+        }.resume()
+    }
+    
     func myProducts(shop_id:Int, completion: @escaping (_ results: [ProductModel]) -> Void){
         
         guard let url = URL(string: "\(ipAddress)shop/products/\(shop_id)"), let token = UserDefaults.standard.string(forKey: "Token") else { return }
@@ -211,9 +311,8 @@ class Shopeeng{
                         let is_insurance = product.is_insurance,
                         let is_enabled = product.is_enabled, let review = product.review else { break }
                     
-                    print(id, name)
-                    
                     let decodedProduct = ProductModel(id: id, shop_id: shop_id, name: name, description: description, stock: stock, price: price, rating: rating, imageURL: "\(self.ipAddress)product/image/\(id)", image: image, total_images: total_images, view: view, sold: sold, heavy: heavy, condition: condition, is_insurance: is_insurance, is_enabled: is_enabled, review: review)
+                    
                     
                     products.append(decodedProduct)
                 }

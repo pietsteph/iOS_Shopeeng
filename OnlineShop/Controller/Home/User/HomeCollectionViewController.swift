@@ -14,7 +14,6 @@ private let reuseIdentifier = "HomeItemCell"
 class HomeCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchBarDelegate, NVActivityIndicatorViewable {
     
     var headers:[String] = ["Popular Items", "New Items"]
-    private var searches = [ProductModel]()
     let shopeeng = Shopeeng()
     var products = [[ProductModel]]()
     
@@ -69,6 +68,8 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
             self.navigationItem.titleView = UIView()
             UIView.transition(with: self.navigationItem.titleView!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: {
                 self.navigationItem.titleView = self.searchController.searchBar
+                self.searchController.searchBar.autocapitalizationType = .none
+                self.searchController.searchBar.placeholder = "Search Your Favorite Shop"
                 self.searchController.searchBar.becomeFirstResponder()
             })
         }
@@ -79,9 +80,18 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
         self.navigationItem.rightBarButtonItem = searchButton
     }
     
+    var keyword = String()
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchWord = searchBar.text else { return }
+        self.keyword = searchWord
+        performSegue(withIdentifier: "search", sender: self)
+    }
+    
     @objc func loadHomeCollectionView(){
         let size = CGSize(width: 40, height: 40)
         startAnimating(size, message: "Please Wait", messageFont: UIFont.systemFont(ofSize: 17, weight: UIFont.Weight.regular), type: NVActivityIndicatorType.ballPulse, color: delegate.themeColor, padding: NVActivityIndicatorView.DEFAULT_PADDING, displayTimeThreshold: NVActivityIndicatorView.DEFAULT_BLOCKER_DISPLAY_TIME_THRESHOLD, minimumDisplayTime: NVActivityIndicatorView.DEFAULT_BLOCKER_MINIMUM_DISPLAY_TIME, backgroundColor: NVActivityIndicatorView.DEFAULT_BLOCKER_BACKGROUND_COLOR, textColor: NVActivityIndicatorView.DEFAULT_TEXT_COLOR)
+        
         shopeeng.homeCollection { (result) in
             DispatchQueue.main.async {
                 self.products = result
@@ -93,7 +103,6 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
     
     @objc func refresh(){
         urlCache.removeAllCachedResponses()
-//        cache.removeAllObjects()
         shopeeng.homeCollection { (result) in
             DispatchQueue.main.async {
                 self.products = result
@@ -137,14 +146,11 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
             vc.navigationItem.title = products[indexPath.section][indexPath.row].name
             
             vc.product = products[indexPath.section][indexPath.row]
-            
-//            vc.productId = products[indexPath.section][indexPath.row].id
-//            vc.productTitle = products[indexPath.section][indexPath.row].name
-//            vc.productPrice = addThousandSeparator(integer: products[indexPath.section][indexPath.row].price)
-//            vc.productDesc = products[indexPath.section][indexPath.row].description
-//            vc.productRate = products[indexPath.section][indexPath.row].rating
-//            vc.productRateText = "\(products[indexPath.section][indexPath.row].rating)"
-//            vc.productURL = products[indexPath.section][indexPath.row].imageURL
+        }
+        
+        if let vc = destination as? SearchTableViewController{
+            vc.navigationItem.title = self.keyword
+            vc.keyword = self.keyword
         }
     }
 
@@ -166,21 +172,26 @@ class HomeCollectionViewController: UICollectionViewController, UICollectionView
         cell.image.addSubview(loader)
         loader.startAnimating()
         
-        let url = products[indexPath.section][indexPath.row].imageURL
+        let id = products[indexPath.section][indexPath.row].id
+        let token = UserDefaults.standard.string(forKey: "Token")
+        let url = URL(string: "\(shopeeng.ipAddress)product/image/\(id)")
         
-        URLSession.shared.dataTask( with: URL(string: url)!, completionHandler: {
+        var request = URLRequest(url: url!)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token!)", forHTTPHeaderField: "Authorization")
+        URLSession.shared.dataTask( with: request, completionHandler: {
             (data, response, error) -> Void in
-            
             guard let data = data, error == nil else {
                 return
             }
             
             DispatchQueue.main.async {
+                cell.image.contentMode = .scaleAspectFit
                 cell.image.image = UIImage(data: data)
                 loader.stopAnimating()
             }
         }).resume()
-        cell.image.contentMode = .scaleAspectFit
+        
         cell.title.text = products[indexPath.section][indexPath.row].name
         let priceString = shopeeng.priceToString(integer: products[indexPath.section][indexPath.row].price)
         cell.price.text = "Rp. \(priceString)"

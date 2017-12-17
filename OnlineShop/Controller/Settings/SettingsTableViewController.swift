@@ -10,11 +10,11 @@ import UIKit
 import NVActivityIndicatorView
 
 class SettingsTableViewController: UITableViewController, NVActivityIndicatorViewable {
-    let setting_name_list_user:[String] = ["Profile", "Change Password", "Change Address", "Secure Apps", "Logout"]
-    let setting_icon_list_user:[String] = ["profile", "lock", "location", "fingerprint", "logout"]
+    let setting_name_list_user:[String] = ["Profile", "Change Password", "Secure Apps", "Logout"]
+    let setting_icon_list_user:[String] = ["profile", "lock", "fingerprint", "logout"]
     
-    let setting_name_list_seller:[String] = ["Profile", "Shop Profile", "Change Password", "Change Address", "Secure Apps", "Logout"]
-    let setting_icon_list_seller:[String] = ["profile", "store", "lock", "location", "fingerprint", "logout"]
+    let setting_name_list_seller:[String] = ["Profile", "Shop Profile", "Change Password", "Secure Apps", "Logout"]
+    let setting_icon_list_seller:[String] = ["profile", "store", "lock", "fingerprint", "logout"]
     
     let delegate = UIApplication.shared.delegate as! AppDelegate
     let shopeeng = Shopeeng()
